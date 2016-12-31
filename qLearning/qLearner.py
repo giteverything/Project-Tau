@@ -1,4 +1,5 @@
-import random
+import random, os, pickle
+from globalvar import *
 
 """
 	default values
@@ -18,16 +19,9 @@ class QValue(dict):
 			return max_action Q(state, action)
 		"""
 		allQValues = [item[1] for item in self.items() if (item[0][0] == state)]
+		if len(allQValues) == 0:
+			return 0
 		return max(allQValues)
-
-	def argMax(self, state):
-		"""
-			return argMax_action Q(state, action)
-		"""
-		all = [item for item in self.items() if item[0][0] == state]
-		values = [item[1] for item in all]
-		maxIndex = values.index(max(values))
-		return all[maxIndex][0][1]
 
 class QLearner():
 	"""
@@ -38,32 +32,33 @@ class QLearner():
 		self.epsilon = float(epsilon)	# randomness
 		self.alpha = float(alpha)		# learning rate
 		self.gamma = float(gamma)		# discount
-		self.__QValue = QValue()
 
-	def stopLearning():
+		if IMPORTQVALUE and os.path.exists(RESULTFILE):
+			with open(RESULTFILE, 'rb') as file:
+				self.QValue = pickle.loads(file.read())
+				print "QValue loaded from file", RESULTFILE
+		else:
+		  self.QValue = QValue()
+
+	def stopLearning(self):
 		self.epsilon = 0.0
 		self.alpha = 0.0
 
 	def getQValue(self, state, action):
-		return self.__QValue[(state, action)]
+		return self.QValue[(state, action)]
 
 	def chooseAction(self, state):
-	"""
-		choose action a in state s from a list of possible actions in s
-	"""
+		"""
+			choose action a in state s from a list of possible actions in s
+		"""
 		actions = self.getActions(state)
 		if random.random() < self.epsilon:
 			return random.choice(actions)
 		else:
-			return self.QValue.argMax(state)
+			values = [ self.getQValue(state,action) for action in actions ]
+			maxIndex = values.index(max(values))
+			return actions[maxIndex]
 
 	def update(self, state, action, nextState, reward):
-		self.__QValue[(state, action)] = (1 - self.alpha) * self.__QValue[(state, action)] + self.alpha * (reward + self.gamma * self.__QValue.max(nextState))
-
-
-
-
-
-
-
-
+		self.QValue[(state, action)] = (1 - self.alpha) * self.QValue[(state, action)] + \
+			self.alpha * (reward + self.gamma * self.QValue.max(nextState))

@@ -1,7 +1,7 @@
 import vrep
 import time, sys
 import cubebot, cubebotWorld
-import math, serial
+import math
 from math import pi as PI 
 from globalvar import *
 

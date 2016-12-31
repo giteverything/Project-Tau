@@ -48,7 +48,7 @@ class CubebotWorld:
           simulation.SimulationEnvironment(self.robotEnvironment,agent)
         getActions = lambda state: \
           self.robotEnvironment.getPossibleActions(state)
-        self.learner = qLearner.QLeaner(getActions=getActions, epsilon=self.explorationRate, alpha=self.learningRate, gamma=self.discount)
+        self.learner = qLearner.QLearner(getActions=getActions, epsilon=self.explorationRate, alpha=self.learningRate, gamma=self.discount)
 
     def step(self):
 
