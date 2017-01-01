@@ -1,9 +1,10 @@
-import verp
-import sys
-import globalvar
+import vrep
+import sys, time
+from math import pi as PI
+from globalvar import *
 
 class simCubebot():
-	def __init__():
+	def __init__(self):
 		print "init connection with V-Rep..."
 		vrep.simxFinish(-1)
 		clientID = vrep.simxStart('127.0.0.1',19997,True,True,5000,5)
@@ -12,12 +13,14 @@ class simCubebot():
 			sys.exit()
 
 		vrep.simxStartSimulation(clientID,vrep.simx_opmode_blocking)
-		_, body=vrep.simxGetObjectHandle(clientID,'body',vrep.simx_opmode_oneshot_wait)
-		_, dummy = vrep.simxGetObjectHandle(self.clientID, "Dummy", vrep.simx_opmode_oneshot_wait)
+		_, body = vrep.simxGetObjectHandle(clientID,'body',vrep.simx_opmode_oneshot_wait)
+		_, dummy = vrep.simxGetObjectHandle(clientID, "Dummy", vrep.simx_opmode_oneshot_wait)
 		upperJoints, lowerJoints = [], []
 		for i in range(0, 4):
 			_, upperJoint = vrep.simxGetObjectHandle(clientID, "upperj"+str(i), vrep.simx_opmode_oneshot_wait)
 			_, lowerJoint = vrep.simxGetObjectHandle(clientID, "lowerj"+str(i), vrep.simx_opmode_oneshot_wait)
+			upperJoints.append(upperJoint)
+			lowerJoints.append(lowerJoint)
 
 		self.clientID = clientID
 		self.body = body
@@ -131,16 +134,16 @@ class simCubebot():
 				oldAngle.append(vrep.simxGetJointPosition(self.clientID, objHandle[i], vrep.simx_opmode_oneshot_wait)[1])
 
 			for s in range(STEP):
-			vrep.simxPauseCommunication(self.clientID, True)
-			for i in range(len(objHandle)):
-				vrep.simxSetJointTargetPosition(self.clientID, objHandle[i], oldAngle[i]
-				 + s * (angle[i] - oldAngle[i])/STEP, vrep.simx_opmode_oneshot)
-			vrep.simxPauseCommunication(self.clientID, False)
-			time.sleep(SLEEPTIME)
+				vrep.simxPauseCommunication(self.clientID, True)
+				for i in range(len(objHandle)):
+					vrep.simxSetJointTargetPosition(self.clientID, objHandle[i], oldAngle[i]
+					 + s * (angle[i] - oldAngle[i])/STEP, vrep.simx_opmode_oneshot)
+				vrep.simxPauseCommunication(self.clientID, False)
+				time.sleep(SLEEPTIME)
 
 		except TypeError:
 			# if there is a single objhanle:
 			_,oldAngle = vrep.simxGetJointPosition(self.clientID, objHandle, vrep.simx_opmode_oneshot_wait)
 			for i in range(STEP):
-				vrep.simxSetJointTargetPosition(self.clientID, objHandle, oldAngle + i * (newAngle - oldAngle)/STEP, vrep.simx_opmode_oneshot)
+				vrep.simxSetJointTargetPosition(self.clientID, objHandle, oldAngle + i * (angle - oldAngle)/STEP, vrep.simx_opmode_oneshot)
 				time.sleep(SLEEPTIME)

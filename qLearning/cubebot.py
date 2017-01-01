@@ -89,12 +89,12 @@ class CubebotEnvironment(environment.Environment):
 		jointBuckets, moveJointFunc, jointBucket = None, None, None
 		if action[1] == 'U':
 			jointBuckets = self.upperJointBuckets
-			moveJointFunc = self.cubebot.moveUpperJoint
+			moveJointFunc = self.cubebot.moveSymUpperJoint
 			jointBucket = self.state[2 * jointNo]
 			nextState[2 * jointNo] += action[2]
 		else:
 			jointBuckets = self.lowerJointBuckets
-			moveJointFunc = self.cubebot.moveLowerJoint
+			moveJointFunc = self.cubebot.moveSymLowerJoint
 			jointBucket = self.state[2 * jointNo + 1]
 			nextState[2 * jointNo + 1] += action[2]
 

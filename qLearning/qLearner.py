@@ -44,6 +44,7 @@ class QLearner():
 			choose action a in state s from a list of possible actions in s
 		"""
 		actions = self.getActions(state)
+
 		if random.random() < self.epsilon:
 			return random.choice(actions)
 		else:
