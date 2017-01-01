@@ -6,6 +6,7 @@ class QValue(dict):
 		self.setdefault(index, 0)
 		return dict.__getitem__(self, index)
 		
+
 	def max(self, state):
 		"""
 			return max_action Q(state, action)
@@ -15,12 +16,12 @@ class QValue(dict):
 			return 0
 		return max(allQValues)
 
+
 class QLearner():
 	"""
 		required to provide getActions(state) = [actions] in initialization
 	"""
-	def __init__(self, getActions, epsilon=EPSILON, alpha=ALPHA, gamma=GAMMA):
-		self.getActions = getActions	# function that returns all possible actions in a given state s
+	def __init__(self, epsilon=EPSILON, alpha=ALPHA, gamma=GAMMA):
 		self.epsilon = float(epsilon)	# randomness
 		self.alpha = float(alpha)		# learning rate
 		self.gamma = float(gamma)		# discount
@@ -32,25 +33,27 @@ class QLearner():
 		else:
 		  self.QValue = QValue()
 
+
 	def stopLearning(self):
 		self.epsilon = 0.0
 		self.alpha = 0.0
 
+
 	def getQValue(self, state, action):
 		return self.QValue[(state, action)]
 
-	def chooseAction(self, state):
+
+	def chooseAction(self, state, actions):
 		"""
 			choose action a in state s from a list of possible actions in s
 		"""
-		actions = self.getActions(state)
-
 		if random.random() < self.epsilon:
 			return random.choice(actions)
 		else:
 			values = [ self.getQValue(state,action) for action in actions ]
 			maxIndex = values.index(max(values))
 			return actions[maxIndex]
+
 
 	def update(self, state, action, nextState, reward):
 		self.QValue[(state, action)] = (1 - self.alpha) * self.QValue[(state, action)] + \
