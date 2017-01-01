@@ -1,14 +1,6 @@
 import random, os, pickle
 from globalvar import *
 
-"""
-	default values
-"""
-EPSILON = 0.5
-ALPHA = 0.8
-GAMMA = 0.8
-NUMTRAINING = 1000
-
 class QValue(dict):
 	def __getitem__(self, index):
 		self.setdefault(index, 0)

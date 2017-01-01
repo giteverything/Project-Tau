@@ -19,13 +19,14 @@ import time
 import environment
 import random
 import vrep
+import simCubebot
 from globalvar import *
 
 class CubebotEnvironment(environment.Environment):
 
-	def __init__(self, cubebot):
+	def __init__(self):
 
-		self.cubebot = cubebot
+		self.cubebot = simCubebot.simCubebot()
 
 		# The state is of the form (upperJointAngleBucket, lowerJointAngleBucket)
 		# where the angles are bucket numbers, not actual degree measurements        
@@ -80,8 +81,8 @@ class CubebotEnvironment(environment.Environment):
 			nextState, reward
 		"""
 
-		oldX, oldY = self.cubebot.getRobotPosition()
-		_,_,oldGamma = self.cubebot.getRobotOrientation()
+		oldX, oldY = self.cubebot.getPosition()
+		_,_,oldGamma = self.cubebot.getOrientation()
 
 		nextState = list(self.state)
 		jointNo = action[0]
@@ -100,8 +101,8 @@ class CubebotEnvironment(environment.Environment):
 		newAngle = jointBuckets[jointBucket + action[2]]	
 		moveJointFunc(jointNo, newAngle)
 
-		newX, newY = self.cubebot.getRobotPosition()
-		_,_,gamma = self.cubebot.getRobotOrientation()
+		newX, newY = self.cubebot.getPosition()
+		_,_,gamma = self.cubebot.getOrientation()
 
 		alpha = math.atan2(newY-oldY, newX-oldX)
 		disp = math.sqrt((newX-oldX)**2 + (newY-oldY)**2)
@@ -111,7 +112,7 @@ class CubebotEnvironment(environment.Environment):
 
 		if abs(gamma) <= 0.785:
 			nextState[-1] = 0
-			reward += self.cubebot.get10StepVelocity()
+			reward += self.cubebot.get10StepXVelocity()
 		elif  0.785 < gamma and gamma < 2.356:
 			nextState[-1] = 1
 			reward = -reward if reward > 0 else reward
@@ -133,21 +134,8 @@ class CubebotEnvironment(environment.Environment):
 		 Resets the Environment to the initial state
 		"""
 		self.state = (0,0,0,0,0)
-		self.cubebot.positions = [0,self.cubebot.getRobotPosition()[0]]
-
-		vrep.simxStopSimulation(self.cubebot.clientID, vrep.simx_opmode_oneshot)
-		time.sleep(0.1)
-		vrep.simxStartSimulation(self.cubebot.clientID, vrep.simx_opmode_oneshot)
-
-		_,body=vrep.simxGetObjectHandle(self.cubebot.clientID,'body',vrep.simx_opmode_oneshot_wait)
-		upperJoints, lowerJoints = [], []
-		for i in range(0, 4):
-			_, upperJoint = vrep.simxGetObjectHandle(self.cubebot.clientID, "upperj"+str(i), vrep.simx_opmode_oneshot_wait)
-			_, lowerJoint = vrep.simxGetObjectHandle(self.cubebot.clientID, "lowerj"+str(i), vrep.simx_opmode_oneshot_wait)
-			upperJoints.append(upperJoint)
-			lowerJoints.append(lowerJoint)
-
-		self.cubebot.reinitializeRobot(body, upperJoints, lowerJoints)
+		self.cubebot.endSim()
+		self.cubebot = simCubebot.simCubebot()
 
 class Cubebot:
 

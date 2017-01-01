@@ -32,7 +32,7 @@ from globalvar import *
 
 class CubebotWorld:
 
-    def __init__(self, robot):
+    def __init__(self):
 
         self.explorationRate = EPSILON
         self.learningRate = ALPHA
@@ -40,8 +40,7 @@ class CubebotWorld:
         self.stepCount = 0
 
         # Init environment
-        self.robot = robot
-        self.robotEnvironment = cubebot.CubebotEnvironment(self.robot)
+        self.robotEnvironment = cubebot.CubebotEnvironment()
 
         # Init Agent
         simulationFn = lambda agent: \
@@ -98,10 +97,6 @@ class CubebotWorld:
         with open(fileName, 'wb') as file:
             pickle.dump(self.learner.QValue, file)
             print "QValue saved to",fileName
-
-        with open("Speed.txt", 'wb') as file:
-            for item in self.robot.speed:
-                file.write(str(item) + ' ')
 
     def end(self):
         self.learner.stopLearning()
