@@ -79,18 +79,18 @@ class Cubebot():
 		newPos = self.simCubebot.getPosition()
 		newOri = self.simCubebot.getOrientation()
 
+		reward, direction = self.getReward(oldPos, oldOri, newPos, newOri)
+		nextState[-1] = direction
 		nextState = tuple(nextState)
-		reward = self.calReward(oldPos, oldOri, newPos, newOri)
 		self.state = nextState
 
 		return nextState, reward
 
 
-	def calReward(self, oldPos, oldOri, newPos, newOri):
+	def getReward(self, oldPos, oldOri, newPos, newOri):
 		"""
 			calculate reward of this step
 		"""
-
 		oldX, oldY = oldPos
 		newX, newY = newPos
 		_, _, oldGamma = oldOri
@@ -99,35 +99,25 @@ class Cubebot():
 		alpha = math.atan2(newY - oldY, newX - oldX)
 		disp = math.sqrt((newX - oldX) ** 2 + (newY - oldY) ** 2)
 		reward = newX - oldX + disp * math.cos(alpha - oldGamma)
+		direction = 0
 
-		if abs(gamma) <= 0.785:
-			nextState[-1] = 0
-			reward += self.cubebot.get10StepXVelocity()
-		elif 0.785 < gamma and gamma < 2.356:
-			nextState[-1] = 1
+		if abs(oldGamma) <= 0.785:
+			direction = 0
+			reward += self.simCubebot.get10StepXVelocity()
+		elif 0.785 < oldGamma and oldGamma < 2.356:
+			direction = 1
 			reward = -reward if reward > 0 else reward
-		elif -0.785 > gamma and gamma > -2.356:
-			nextState[-1] = 3
+		elif -0.785 > oldGamma and oldGamma > -2.356:
+			direction = 3
 			reward = -reward if reward > 0 else reward
 		else:
-			nextState[-1] = 2
+			direction = 2
 			reward = -reward if reward > 0 else reward
 
-		return reward
+		return reward, direction
 
 
 	def reset(self):
 		state = (0,0,0,0,0)
 		self.simCubebot.endSim()
 		self.simCubebot = simCubebot.SimCubebot()
-
-
-
-
-
-
-
-
-
-
-

@@ -58,7 +58,7 @@ class CubebotWorld:
             # self.learner.setEpsilon(self.explorationRate)         
 
         state = self.robot.getCurrentState()
-        actions = self.robot.getPossibleActions(state)
+        actions = self.robot.getActions(state)
         if len(actions) == 0.0 or self.stepCount % 3000 == 0:
             print "---------------------------------"
             print "REINITIALIZE SIMULATION"
