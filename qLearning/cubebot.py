@@ -121,3 +121,8 @@ class Cubebot():
 		state = (0,0,0,0,0)
 		self.simCubebot.endSim()
 		self.simCubebot = simCubebot.SimCubebot()
+
+
+	def end(self):
+		self.simCubebot.endSim()
+		print "Simulated ended"

@@ -1,24 +1,19 @@
-import vrep
 import time, sys
-import cubebot, cubebotWorld
+import world
 import math
 from math import pi as PI 
 from globalvar import *
 
 print ('Program started')
 
-world = cubebotWorld.CubebotWorld()
+world = world.World()
 world.start()
+
 try:
 	while True:
 		world.step()
 		time.sleep(SLEEPTIME)
-except KeyboardInterrupt:
-	print "---------------------------------"
-	print "Stopping Program..."
-	print "Writing QValue to {} ...".format(RESULTFILE)
-	world.saveLearningResult(RESULTFILE)
-	print "---------------------------------"        
+except KeyboardInterrupt:    
 	world.end()
 
 print ('Program ended')
