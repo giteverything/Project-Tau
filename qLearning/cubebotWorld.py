@@ -22,11 +22,9 @@
 # Abbeel in Spring 2013.
 # For more info, see http://inst.eecs.berkeley.edu/~cs188/pacman/pacman.html
 
-import qLearner
-import time
+import qLearner, cubebot
+import time, math
 import sys, pickle
-import cubebot
-import math
 from math import pi as PI
 from globalvar import *
 
@@ -39,14 +37,10 @@ class CubebotWorld:
         self.discount = GAMMA
         self.stepCount = 0
 
-        # Init environment
-        self.robotEnvironment = cubebot.CubebotEnvironment()
+        self.robot = cubebot.Cubebot()
 
-        # Init Agent
-        simulationFn = lambda agent: \
-          simulation.SimulationEnvironment(self.robotEnvironment,agent)
         getActions = lambda state: \
-          self.robotEnvironment.getPossibleActions(state)
+          self.robot.getActions(state)
         self.learner = qLearner.QLearner(getActions=getActions, epsilon=self.explorationRate, alpha=self.learningRate, gamma=self.discount)
 
     def step(self):
@@ -63,20 +57,20 @@ class CubebotWorld:
             self.learningRate = 0
             # self.learner.setEpsilon(self.explorationRate)         
 
-        state = self.robotEnvironment.getCurrentState()
-        actions = self.robotEnvironment.getPossibleActions(state)
+        state = self.robot.getCurrentState()
+        actions = self.robot.getPossibleActions(state)
         if len(actions) == 0.0 or self.stepCount % 3000 == 0:
             print "---------------------------------"
             print "REINITIALIZE SIMULATION"
             print "---------------------------------"                 
-            self.robotEnvironment.reset()
-            state = self.robotEnvironment.getCurrentState()
-            actions = self.robotEnvironment.getPossibleActions(state)
+            self.robot.reset()
+            state = self.robot.getCurrentState()
+            actions = self.robot.getActions(state)
 
         action = self.learner.chooseAction(state)
         if action == None:
             raise ('None action returned: Code Not Complete')
-        nextState, reward = self.robotEnvironment.doAction(action)
+        nextState, reward = self.robot.doAction(action)
         self.learner.update(state, action, nextState, reward)
 
         print "Step: ", self.stepCount

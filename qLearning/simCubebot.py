@@ -3,7 +3,7 @@ import sys, time
 from math import pi as PI
 from globalvar import *
 
-class simCubebot():
+class SimCubebot():
 	def __init__(self):
 		print "init connection with V-Rep..."
 		vrep.simxFinish(-1)
@@ -126,9 +126,6 @@ class simCubebot():
 	def move(self, objHandle, angle):
 		try:
 			# if it is a list of handles:
-			if len(objHandle) != len(angle):
-				print "Error: simCubebot: len(objHandle) =", len(objHandle), "len(angle) =", len(angle)
-
 			oldAngle = []
 			for i in range(len(objHandle)):
 				oldAngle.append(vrep.simxGetJointPosition(self.clientID, objHandle[i], vrep.simx_opmode_oneshot_wait)[1])
