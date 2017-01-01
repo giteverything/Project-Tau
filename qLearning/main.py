@@ -1,7 +1,6 @@
 import time, sys
 import world
 import math
-from math import pi as PI 
 from globalvar import *
 
 print ('Program started')

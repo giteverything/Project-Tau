@@ -1,3 +1,4 @@
+import pickle
 import cubebot, qLearner
 from globalvar import *
 
@@ -6,10 +7,10 @@ class World():
 		self.explorationRate = EPSILON
 		self.learningRate = ALPHA
 		self.discount = GAMMA
-		self.step = 0
+		self.episode = 0
 
 		self.robot = cubebot.Cubebot()
-		self.learner = qLearner.QLearner(getActions=self.cubebot.getActions, epsilon=self.explorationRate, 
+		self.learner = qLearner.QLearner(getActions=self.robot.getActions, epsilon=self.explorationRate, 
 			alpha=self.learningRate, gamma=self.discount)
 
 
@@ -20,11 +21,11 @@ class World():
 		print "LearningRate:", self.learningRate
 		print "Discount:", self.discount
 		print "======================="
-		self.step = 0
+		self.episode = 0
 
 
 	def step(self):
-		self.step += 1
+		self.episode += 1
 		state = self.robot.getCurrentState()
 		actions = self.robot.getActions(state)
 
@@ -33,10 +34,11 @@ class World():
 			state = self.robot.getCurrentState()
 			actions = self.robot.getActions(state)
 
+		action = self.learner.chooseAction(state)
 		nextState, reward = self.robot.doAction(action)
 		self.learner.update(state, action, nextState, reward)
 
-		print "Step: ", self.stepCount
+		print "Episode: ", self.episode
 		print "(s , a):", state, action
 		print "(s', r):", nextState, "\t\t{:.3f}".format(reward)
 		print ""
@@ -46,9 +48,9 @@ class World():
 		print "======================="
 		print "Ending..."
 
-		with open(fileName, 'wb') as file:
+		with open(RESULTFILE, 'wb') as file:
 			pickle.dump(self.learner.QValue, file)
-			print "QValue saved to",fileName
+			print "QValue saved to", RESULTFILE
 
 		self.robot.end()
 

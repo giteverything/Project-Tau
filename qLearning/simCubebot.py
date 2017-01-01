@@ -40,6 +40,7 @@ class SimCubebot():
 
 	def endSim(self):
 		vrep.simxStopSimulation(self.clientID, vrep.simx_opmode_oneshot)
+		time.sleep(SLEEPTIME)
 		vrep.simxFinish(self.clientID)
 
 
